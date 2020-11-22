@@ -44,7 +44,7 @@ internals.migrateOptions = Object.assign({}, internals.createOptions, {
   },
   cursor: {
     describe: 'If true, cursors will not be automatically converted to arrays when using rethinkdbdash. Default to true.'
-  }
+  },
 })
 
 /* eslint-disable no-unused-expressions */
@@ -54,14 +54,14 @@ require('yargs')
     command: 'create <name>',
     desc: 'Creates a migration file from template, with the provided name',
     builder: internals.createOptions,
-    handler: runCreate
+    handler: runCreate,
   })
   .example('$0 create <name>', 'Creates a migration named <name>')
   .command({
     command: 'up',
     desc: 'Runs all new migrations up',
     builder: internals.migrateOptions,
-    handler: runMigrations.bind(null, 'up')
+    handler: runMigrations.bind(null, 'up'),
   })
   .example('$0 up', 'Runs all new migrations up')
   .example('$0 up --step=<number>', 'Run just this number of new migrations up')
@@ -69,23 +69,32 @@ require('yargs')
     command: 'down',
     desc: 'Rollback all previously executed migrations',
     builder: internals.migrateOptions,
-    handler: runMigrations.bind(null, 'down')
+    handler: runMigrations.bind(null, 'down'),
   })
   .number('step')
   .nargs('step', 1)
   .describe('step', 'Number of migrations to run, if omitted run or rollback all migrations')
   .example('$0 down', 'Runs all migrations down')
-  .example('$0 down --step=<number>', 'Rollback just this number of previously executed migration files')
+  .example(
+    '$0 down --step=<number>',
+    'Rollback just this number of previously executed migration files'
+  )
   .alias('f', 'file')
   .nargs('f', 1)
   .describe('f', 'Uses the provided file as the options to be used when migration is run')
   .alias('i', 'ignore-timestamp')
   .nargs('i', 0)
   .describe('i', 'Ignore timestamp when applying migrations')
+  .boolean('allowTs')
+  .describe(
+    'allowTs',
+    'Allow typescript migration files. Rethinkdb-migrate must be launched using ts-node for this to work'
+  )
+  .nargs('allowTs', 0)
+  .example('$0 --allowTs up')
   .help('h')
   .alias('h', 'help')
-  .demandCommand(1)
-  .argv
+  .demandCommand(1).argv;
 
 logger(Migrations.migrate.emitter)
 
@@ -120,7 +129,7 @@ function logger (emitter) {
  * an option present in the config file and also a environment variable, and so on
  */
 function buildOptions (argv) {
-  const optionsMask = 'name,migrationsDirectory,relativeTo,migrationsTable,host,port,db,user,username,password,authKey,driver,discovery,pool,cursor,servers,ssl,i,ignoreTimestamp,step'
+  const optionsMask = 'name,migrationsDirectory,relativeTo,migrationsTable,host,port,db,user,username,password,authKey,driver,discovery,pool,cursor,servers,ssl,i,ignoreTimestamp,step,allowTs'
   const envVars = Mask(process.env, optionsMask)
   const file = Mask(readOptionsFile(argv), optionsMask)
   const args = Mask(argv, optionsMask)

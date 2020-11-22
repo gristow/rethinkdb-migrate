@@ -155,6 +155,7 @@ step | none | Number of migrations to execute or rollback. If omitted, all migra
 migrationsDirectory | `migrations` | Directory where migration files will be saved
 relativeTo | `process.cwd()` | Root path from which migration directory will be searched or created (if inexistent)'
 migrationsTable | `_migrations` | Table where meta information about migrations will be saved. This should only be changed if you need a \_migrations table in your application
+allowTs | `false` | Whether to include .ts migrations. To use this, rethinkdb-migrate must be launched using ts-node (e.g. `ts-node ./node_modules/rethinkdb-migrate/bin/rethinkdb-migrate`)
 
 Options can be passed to the script in three different ways:
 
